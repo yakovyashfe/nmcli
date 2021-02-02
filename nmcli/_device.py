@@ -32,7 +32,7 @@ class DeviceControlInterface:
     def wifi(self) -> List[DeviceWifi]:
         raise NotImplementedError
 
-    def wifi_connect(self, ssid: str, password: str) -> None:
+    def wifi_connect(self, ssid: str, password: str) -> bool:
         raise NotImplementedError
 
 
@@ -102,6 +102,10 @@ class DeviceControl(DeviceControlInterface):
                     results.append(DeviceWifi.parse(row))
         return results
 
-    def wifi_connect(self, ssid: str, password: str) -> None:
-        self._syscmd.nmcli(['device', 'wifi', 'connect',
+    def wifi_connect(self, ssid: str, password: str) -> bool:
+        result = self._syscmd.nmcli(['device', 'wifi', 'connect',
                             ssid, 'password', password])
+        if 'successfully' in result:
+            return True
+        else:
+            return False
